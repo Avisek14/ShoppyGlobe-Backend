@@ -11,7 +11,7 @@ const seedDB = async () => {
 
     // Fetch products from DummyJSON API dynamically
     console.log('🔄 Fetching products from DummyJSON API...');
-    const response = await fetch('https://dummyjson.com/products?limit=99');
+    const response = await fetch('https://dummyjson.com/products?limit=50');
     const data = await response.json();
 
     // Map DummyJSON fields to our Product schema
