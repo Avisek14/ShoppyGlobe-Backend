@@ -4,13 +4,11 @@ const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema(
   {
-    // User full name
     name: {
       type: String,
       required: [true, 'Name is required'],
       trim: true,
     },
-    // User email - must be unique
     email: {
       type: String,
       required: [true, 'Email is required'],
@@ -19,7 +17,6 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email'],
     },
-    // User password - hashed
     password: {
       type: String,
       required: [true, 'Password is required'],
@@ -31,16 +28,21 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// Hash password before saving to database
+// Hash password before saving
 userSchema.pre('save', async function (next) {
-  // Only hash if password is modified
-  if (!this.isModified('password')) return next();
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
+  if (!this.isModified('password')) {
+    return next();
+  }
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    return next();
+  } catch (err) {
+    return next(err);
+  }
 });
 
-// Method to compare password during login
+// Compare password method
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
