@@ -12,7 +12,6 @@ const generateToken = (id) => {
 };
 
 // ===== POST /auth/register =====
-// Register a new user
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -31,7 +30,6 @@ router.post('/register', async (req, res) => {
     // Create new user
     const user = await User.create({ name, email, password });
 
-    // Return user data with token
     res.status(201).json({
       message: '✅ User registered successfully',
       user: {
@@ -47,7 +45,6 @@ router.post('/register', async (req, res) => {
 });
 
 // ===== POST /auth/login =====
-// Login user and return JWT token
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -69,7 +66,6 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: '❌ Invalid email or password' });
     }
 
-    // Return user data with token
     res.status(200).json({
       message: '✅ Login successful',
       user: {

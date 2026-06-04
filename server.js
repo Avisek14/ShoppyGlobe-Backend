@@ -1,4 +1,4 @@
-// Main server file - Entry point of the application
+// Main server file
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -9,7 +9,6 @@ const productRoutes = require('./src/routes/productRoutes');
 const cartRoutes = require('./src/routes/cartRoutes');
 const authRoutes = require('./src/routes/authRoutes');
 
-// Initialize express app
 const app = express();
 
 // ===== MIDDLEWARE =====
@@ -41,7 +40,10 @@ app.use((req, res) => {
 // ===== GLOBAL ERROR HANDLER =====
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: '❌ Internal Server Error', error: err.message });
+  res.status(500).json({ 
+    message: '❌ Internal Server Error', 
+    error: err.message 
+  });
 });
 
 // ===== CONNECT TO MONGODB =====
