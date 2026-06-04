@@ -1,89 +1,38 @@
-// Seed file - adds sample products to MongoDB
+// Seed file - fetches products from DummyJSON API and saves to MongoDB
 const mongoose = require('mongoose');
 const Product = require('../models/Product');
 require('dotenv').config();
 
-// Sample products data
-const products = [
-  {
-    name: 'iPhone 15 Pro',
-    price: 999,
-    description: 'Latest Apple iPhone with A17 Pro chip',
-    stock: 50,
-    category: 'smartphones',
-    image: 'https://dummyjson.com/image/150',
-  },
-  {
-    name: 'Samsung Galaxy S24',
-    price: 799,
-    description: 'Samsung flagship with AI features',
-    stock: 40,
-    category: 'smartphones',
-    image: 'https://dummyjson.com/image/150',
-  },
-  {
-    name: 'MacBook Pro M3',
-    price: 1999,
-    description: 'Apple MacBook with M3 chip',
-    stock: 20,
-    category: 'laptops',
-    image: 'https://dummyjson.com/image/150',
-  },
-  {
-    name: 'Sony WH-1000XM5',
-    price: 349,
-    description: 'Best noise cancelling headphones',
-    stock: 60,
-    category: 'audio',
-    image: 'https://dummyjson.com/image/150',
-  },
-  {
-    name: 'Nike Air Max',
-    price: 129,
-    description: 'Comfortable running shoes',
-    stock: 100,
-    category: 'footwear',
-    image: 'https://dummyjson.com/image/150',
-  },
-  {
-    name: 'Leather Wallet',
-    price: 49,
-    description: 'Premium genuine leather wallet',
-    stock: 80,
-    category: 'accessories',
-    image: 'https://dummyjson.com/image/150',
-  },
-  {
-    name: 'Dell Monitor 27"',
-    price: 399,
-    description: '4K UHD IPS display monitor',
-    stock: 30,
-    category: 'electronics',
-    image: 'https://dummyjson.com/image/150',
-  },
-  {
-    name: 'Mechanical Keyboard',
-    price: 149,
-    description: 'RGB mechanical gaming keyboard',
-    stock: 45,
-    category: 'electronics',
-    image: 'https://dummyjson.com/image/150',
-  },
-];
-
-// Connect and seed
 const seedDB = async () => {
   try {
+    // Connect to MongoDB
     await mongoose.connect(process.env.MONGODB_URI);
     console.log('✅ MongoDB Connected!');
+
+    // Fetch products from DummyJSON API dynamically
+    console.log('🔄 Fetching products from DummyJSON API...');
+    const response = await fetch('https://dummyjson.com/products?limit=99');
+    const data = await response.json();
+
+    // Map DummyJSON fields to our Product schema
+    const products = data.products.map(p => ({
+      name: p.title,
+      price: p.price,
+      description: p.description,
+      stock: p.stock,
+      category: p.category,
+      image: p.thumbnail,
+    }));
+
+    console.log(`📦 ${products.length} products fetched from DummyJSON!`);
 
     // Delete existing products
     await Product.deleteMany();
     console.log('🗑️ Old products deleted!');
 
-    // Insert new products
+    // Insert all fetched products
     await Product.insertMany(products);
-    console.log('✅ Sample products added successfully!');
+    console.log(`✅ ${products.length} products saved to MongoDB successfully!`);
 
     process.exit(0);
   } catch (error) {
